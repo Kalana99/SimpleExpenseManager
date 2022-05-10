@@ -73,30 +73,35 @@ public class ApplicationTest {
     public void testIncomeTransaction() throws InvalidAccountException {
 
         expenseManager.addAccount("22AABB", "PB", "Kalana", 1000.0);
+
+        Account acc_old = dbHelper.getAccount("22AABB");
+
         expenseManager.updateAccountBalance("22AABB", 22, 5, 2022, ExpenseType.INCOME, "2000.0");
 
         List<Transaction> transactions = expenseManager.getTransactionLogs();
         Transaction last = transactions.get(transactions.size() - 1);
         String acc_no = last.getAccountNo();
-        Account acc = dbHelper.getAccount(acc_no);
+        Account acc_nw = dbHelper.getAccount(acc_no);
 
         assertTrue(acc_no, acc_no.equals("22AABB"));
         assertTrue(String.valueOf(last.getAmount()), last.getAmount() == 2000.0);
-        assertTrue(String.valueOf(acc.getBalance()), acc.getBalance() == 3000.0);
+        assertTrue(String.valueOf(acc_nw.getBalance()), acc_nw.getBalance() == acc_old.getBalance() + 2000.0);
     }
 
     @Test
     public void testExpenseTransaction() throws InvalidAccountException {
+
+        Account acc_old = dbHelper.getAccount("22AABB");
 
         expenseManager.updateAccountBalance("22AABB", 22, 5, 2022, ExpenseType.EXPENSE, "250.0");
 
         List<Transaction> transactions = expenseManager.getTransactionLogs();
         Transaction last = transactions.get(transactions.size() - 1);
         String acc_no = last.getAccountNo();
-        Account acc = dbHelper.getAccount(acc_no);
+        Account acc_nw = dbHelper.getAccount(acc_no);
 
         assertTrue(acc_no.equals("22AABB"));
         assertTrue(String.valueOf(last.getAmount()), last.getAmount() == 250.0);
-        assertTrue(String.valueOf(acc.getBalance()),acc.getBalance() == 2750.0);
+        assertTrue(String.valueOf(acc_nw.getBalance()),acc_nw.getBalance() == acc_old.getBalance() - 250.0);
     }
 }
